@@ -12,3 +12,12 @@ import time
 import os
 
 from utility import *
+
+load_dotenv()
+
+app = FastAPI()
+app.mount(
+    "/static",
+    StaticFiles(directory="static"),
+    name="static"
+)
