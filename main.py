@@ -21,3 +21,9 @@ app.mount(
     StaticFiles(directory="static"),
     name="static"
 )
+
+templates = Jinja2Templates(directory = "templates")
+
+creds = Credentials.from_authorized_user_file(
+    "token.json"
+)
