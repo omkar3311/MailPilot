@@ -27,3 +27,8 @@ templates = Jinja2Templates(directory = "templates")
 creds = Credentials.from_authorized_user_file(
     "token.json"
 )
+service = gmail_service(creds)
+
+calendar = calendar_service(creds)
+
+client = groq_client(os.getenv("GROQ_API_KEY"))
