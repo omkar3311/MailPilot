@@ -25,3 +25,8 @@ def calendar_service(creds):
     "v3",
     credentials=creds
 )
+    
+def groq_client(api_key):
+    return Groq(
+    api_key=os.getenv("GROQ_API_KEY")
+)
