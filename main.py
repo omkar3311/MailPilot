@@ -32,3 +32,10 @@ service = gmail_service(creds)
 calendar = calendar_service(creds)
 
 client = groq_client(os.getenv("GROQ_API_KEY"))
+
+def get_db():
+
+    return sqlite3.connect(
+        "email.db",
+        check_same_thread=False
+    )
