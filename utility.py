@@ -18,3 +18,10 @@ def gmail_service(creds):
         "v1",
         credentials=creds
     )
+    
+def calendar_service(creds):
+    return build(
+    "calendar",
+    "v3",
+    credentials=creds
+)
