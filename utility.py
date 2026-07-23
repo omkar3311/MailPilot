@@ -10,3 +10,11 @@ from email.mime.text import MIMEText
 from datetime import datetime, timedelta
 
 import re
+
+def gmail_service(creds):
+
+    return build(
+        "gmail",
+        "v1",
+        credentials=creds
+    )
