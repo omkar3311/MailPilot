@@ -80,3 +80,23 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
 )
 """)
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS drafts(
+
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+email_id TEXT,
+
+thread_id TEXT,
+
+sender TEXT,
+
+subject TEXT,
+
+draft_reply TEXT,
+
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+)
+""")
