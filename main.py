@@ -42,3 +42,41 @@ def get_db():
     
 conn = get_db()
 cursor = conn.cursor()
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS emails(
+
+id TEXT PRIMARY KEY,
+
+thread_id TEXT,
+
+sender TEXT,
+
+subject TEXT,
+
+body TEXT,
+
+snippet TEXT,
+
+email_date TEXT,
+
+needs_reply INTEGER,
+
+priority TEXT,
+
+summary TEXT,
+
+draft_reply TEXT,
+
+input_tokens INTEGER,
+
+output_tokens INTEGER,
+
+total_tokens INTEGER,
+
+status TEXT DEFAULT 'pending',
+
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+)
+""")
