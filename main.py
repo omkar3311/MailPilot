@@ -39,3 +39,6 @@ def get_db():
         "email.db",
         check_same_thread=False
     )
+    
+conn = get_db()
+cursor = conn.cursor()
