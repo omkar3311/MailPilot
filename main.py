@@ -102,3 +102,5 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 """)
 
 conn.commit()
+
+AUTO_SEND = False
