@@ -30,3 +30,16 @@ def groq_client(api_key):
     return Groq(
     api_key=os.getenv("GROQ_API_KEY")
 )
+    
+def get_messages_id(
+    service,
+    query="in:inbox",
+    max_results=10
+):
+    results = service.users().messages().list(
+        userId="me",
+        q=query,
+        maxResults=max_results
+    ).execute()
+
+    return results.get("messages", [])
