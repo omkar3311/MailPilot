@@ -51,3 +51,51 @@ def get_message(service, message_id):
         id=message_id,
         format="full"
     ).execute()
+
+def parse_email(message):
+    
+
+    headers = message["payload"]["headers"]
+
+    sender = ""
+    subject = ""
+    date = ""
+
+    for h in headers:
+
+        if h["name"] == "From":
+            sender = h["value"]
+
+        elif h["name"] == "Subject":
+            subject = h["value"]
+
+        elif h["name"] == "Date":
+            date = h["value"]
+
+    body = extract_email_text(message["payload"])
+    body = clean_text(body)
+    return {
+
+        "id": message["id"],
+
+        "thread_id": message["threadId"],
+        
+        "payload": message["payload"],
+
+        "from": sender,
+
+        "subject": subject,
+
+        "date": date,
+
+        "snippet": message.get(
+            "snippet",
+            ""
+        ),
+
+        # "body": extract_email_text(
+        #     message["payload"]
+        # )
+        "body" :body
+
+    }
