@@ -43,3 +43,11 @@ def get_messages_id(
     ).execute()
 
     return results.get("messages", [])
+
+def get_message(service, message_id):
+
+    return service.users().messages().get(
+        userId="me",
+        id=message_id,
+        format="full"
+    ).execute()
