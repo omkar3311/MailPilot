@@ -52,6 +52,44 @@ def get_message(service, message_id):
         format="full"
     ).execute()
 
+def extract_email_text(payload):
+    text = None
+    html = None
+
+    def walk(part):
+        nonlocal text, html
+
+        mime = part.get("mimeType", "")
+
+        if mime == "text/plain":
+            data = part["body"].get("data")
+            if data:
+                text = base64.urlsafe_b64decode(data).decode(
+                    "utf-8",
+                    errors="ignore"
+                )
+
+        elif mime == "text/html":
+            data = part["body"].get("data")
+            if data:
+                html = base64.urlsafe_b64decode(data).decode(
+                    "utf-8",
+                    errors="ignore"
+                )
+
+        for child in part.get("parts", []):
+            walk(child)
+
+    walk(payload)
+
+    if text and len(text.strip()) > 50:
+        return text
+
+    if html:
+        return BeautifulSoup(html, "html.parser").get_text("\n", strip=True)
+
+    return ""
+
 def parse_email(message):
     
 
