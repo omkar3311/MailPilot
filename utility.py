@@ -217,3 +217,14 @@ def send_reply(service, email, reply):
         userId="me",
         body=body
     ).execute()
+    
+def mark_as_read(service, message_id):
+
+    service.users().messages().modify(
+        userId="me",
+        id=message_id,
+        body={
+            "removeLabelIds": ["UNREAD"]
+        }
+    ).execute()
+    
