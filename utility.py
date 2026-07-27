@@ -147,3 +147,27 @@ def parse_email(message):
         "body" :body
 
     }
+def should_analyze(email):
+
+    sender = email["from"].lower()
+    subject = email["subject"].lower()
+
+    if "noreply" in sender:
+        return False
+
+    if "no-reply" in sender:
+        return False
+
+    if "newsletter" in sender:
+        return False
+
+    if "marketing@" in sender:
+        return False
+
+    if "receipt" in sender:
+        return False
+
+    if "promotion" in subject:
+        return False
+
+    return True
