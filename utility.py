@@ -228,3 +228,56 @@ def mark_as_read(service, message_id):
         }
     ).execute()
     
+def create_draft(service, email, reply):
+
+    to_email = email["from"]
+
+    if "<" in to_email:
+        to_email = to_email.split("<")[1].replace(">", "").strip()
+
+    message = MIMEText(reply)
+
+    message["To"] = to_email
+
+    if email["subject"].startswith("Re:"):
+        message["Subject"] = email["subject"]
+    else:
+        message["Subject"] = f"Re: {email['subject']}"
+
+    headers = email["payload"]["headers"]
+
+    message_id = ""
+    references = ""
+
+    for h in headers:
+
+        if h["name"] == "Message-ID":
+            message_id = h["value"]
+
+        elif h["name"] == "References":
+            references = h["value"]
+
+    if message_id:
+        message["In-Reply-To"] = message_id
+
+    if references:
+        message["References"] = references + " " + message_id
+    elif message_id:
+        message["References"] = message_id
+
+    raw = base64.urlsafe_b64encode(
+        message.as_bytes()
+    ).decode()
+
+    draft = {
+        "message": {
+            "raw": raw,
+            "threadId": email["thread_id"]
+        }
+    }
+
+    return service.users().drafts().create(
+        userId="me",
+        body=draft
+    ).execute()
+    
