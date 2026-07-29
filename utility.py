@@ -281,6 +281,12 @@ def create_draft(service, email, reply):
         body=draft
     ).execute()
     
+def check_calendar_availability(
+    service,
+    start_time,
+    end_time
+):pass    
+
     
 def ask_groq(client, email, result=None, slots=None):
     background = """
