@@ -295,6 +295,10 @@ def check_calendar_availability(
             }
         ]
     }    
+    
+    result = service.freebusy().query(
+        body=body
+    ).execute()
 
     
 def ask_groq(client, email, result=None, slots=None):
