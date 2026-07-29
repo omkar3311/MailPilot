@@ -301,6 +301,7 @@ def check_calendar_availability(
     ).execute()
     
     busy = result["calendars"]["primary"]["busy"]
+    return len(busy) == 0
 
     
 def ask_groq(client, email, result=None, slots=None):
