@@ -285,7 +285,16 @@ def check_calendar_availability(
     service,
     start_time,
     end_time
-):pass    
+):
+    body = {
+        "timeMin": start_time.isoformat(),
+        "timeMax": end_time.isoformat(),
+        "items": [
+            {
+                "id": "primary"
+            }
+        ]
+    }    
 
     
 def ask_groq(client, email, result=None, slots=None):
