@@ -410,6 +410,12 @@ def create_calendar_event(
             "dateTime": start_time.isoformat(),
             "timeZone": "Asia/Kolkata"
         },
+        "end": {
+            "dateTime": end_time.isoformat(),
+            "timeZone": "Asia/Kolkata"
+        }
+    }
+
 
 def handle_meeting_request(calendar, client, email, result):
 
