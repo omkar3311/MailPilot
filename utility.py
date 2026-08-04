@@ -401,6 +401,15 @@ def create_calendar_event(
     attendee_email=None,
     description=""
 ):
+    event = {
+        "summary": title,
+
+        "description": description,
+
+        "start": {
+            "dateTime": start_time.isoformat(),
+            "timeZone": "Asia/Kolkata"
+        },
 
 def handle_meeting_request(calendar, client, email, result):
 
