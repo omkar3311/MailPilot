@@ -391,7 +391,7 @@ def extract_email(sender):
     match = re.search(r'<(.+?)>', sender)
     if match:
         return match.group(1)
-
+    return sender
 def handle_meeting_request(calendar, client, email, result):
 
     if not result.get("meeting_request"):
