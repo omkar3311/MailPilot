@@ -392,6 +392,16 @@ def extract_email(sender):
     if match:
         return match.group(1)
     return sender
+
+def create_calendar_event(
+    service,
+    title,
+    start_time,
+    end_time,
+    attendee_email=None,
+    description=""
+):
+
 def handle_meeting_request(calendar, client, email, result):
 
     if not result.get("meeting_request"):
