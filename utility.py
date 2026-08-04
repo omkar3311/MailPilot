@@ -389,7 +389,8 @@ Return JSON only:
 
 def extract_email(sender):
     match = re.search(r'<(.+?)>', sender)
-
+    if match:
+        return match.group(1)
 
 def handle_meeting_request(calendar, client, email, result):
 
