@@ -448,6 +448,7 @@ def find_available_slots(
                     end
                 )
             )
+    return slots    
 
 
 
