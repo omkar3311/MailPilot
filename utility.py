@@ -416,6 +416,11 @@ def create_calendar_event(
         }
     }
 
+def find_available_slots(
+    service,
+    date,
+    duration_minutes=60
+):
 
 def handle_meeting_request(calendar, client, email, result):
 
