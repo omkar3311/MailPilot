@@ -421,6 +421,11 @@ def find_available_slots(
     date,
     duration_minutes=60
 ):
+    
+    slots = []
+
+    start_hour = 9
+    end_hour = 18
 
 def handle_meeting_request(calendar, client, email, result):
 
