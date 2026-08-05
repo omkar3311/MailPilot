@@ -434,6 +434,10 @@ def find_available_slots(
             hour,
             0
         )
+        end = start + timedelta(
+            minutes=duration_minutes
+        )
+
 
 
 
