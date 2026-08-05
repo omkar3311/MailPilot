@@ -427,6 +427,14 @@ def find_available_slots(
     start_hour = 9
     end_hour = 18
     for hour in range(start_hour, end_hour):
+        start = datetime(
+            date.year,
+            date.month,
+            date.day,
+            hour,
+            0
+        )
+
 
 
 def handle_meeting_request(calendar, client, email, result):
