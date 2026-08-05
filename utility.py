@@ -437,7 +437,11 @@ def find_available_slots(
         end = start + timedelta(
             minutes=duration_minutes
         )
-
+        if check_calendar_availability(
+            service,
+            start,
+            end
+        ):
 
 
 
