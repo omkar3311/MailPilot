@@ -442,6 +442,12 @@ def find_available_slots(
             start,
             end
         ):
+            slots.append(
+                (
+                    start,
+                    end
+                )
+            )
 
 
 
