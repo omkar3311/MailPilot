@@ -11,13 +11,6 @@ from datetime import datetime, timedelta
 
 import re
 
-def clean_text(text):
-    
-    text = re.sub(r'<!--.*?-->', '', text, flags=re.S)
-    text = re.sub(r'https?://\S+', '', text)
-    text = re.sub(r'\n{3,}', '', text)
-    return text.strip()
-
 def gmail_service(creds):
 
     return build(
