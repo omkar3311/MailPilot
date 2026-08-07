@@ -416,6 +416,14 @@ def create_calendar_event(
         }
     }
 
+def update_calendar_event(
+    service,
+    event_id,
+    title,
+    start_time,
+    end_time
+):
+
 def find_available_slots(
     service,
     date,
