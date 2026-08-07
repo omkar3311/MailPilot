@@ -11,6 +11,8 @@ from datetime import datetime, timedelta
 
 import re
 
+def clean_text(text):
+
 def gmail_service(creds):
 
     return build(
