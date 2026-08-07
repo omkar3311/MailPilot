@@ -14,6 +14,7 @@ import re
 def clean_text(text):
     
     text = re.sub(r'<!--.*?-->', '', text, flags=re.S)
+    text = re.sub(r'https?://\S+', '', text)
 
 def gmail_service(creds):
 
