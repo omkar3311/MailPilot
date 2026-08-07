@@ -427,6 +427,7 @@ def update_calendar_event(
         calendarId="primary",
         eventId=event_id
     ).execute()
+    event["summary"] = title
 
 def find_available_slots(
     service,
