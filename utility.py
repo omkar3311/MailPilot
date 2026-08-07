@@ -12,6 +12,8 @@ from datetime import datetime, timedelta
 import re
 
 def clean_text(text):
+    
+    text = re.sub(r'<!--.*?-->', '', text, flags=re.S)
 
 def gmail_service(creds):
 
