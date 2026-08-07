@@ -423,6 +423,10 @@ def update_calendar_event(
     start_time,
     end_time
 ):
+    event = service.events().get(
+        calendarId="primary",
+        eventId=event_id
+    ).execute()
 
 def find_available_slots(
     service,
