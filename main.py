@@ -383,3 +383,27 @@ def draft(email_id:str):
         "success":True
 
     }
+    
+@app.post("/skip/{email_id}")
+
+def skip(email_id:str):
+
+    mark_as_read(
+        service,
+        email_id
+
+    )
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE emails
+        SET status='skipped'
+        WHERE id=?
+        """,(email_id,))
+
+    conn.commit()
+
+    return {
+
+        "success":True
+
+    }
