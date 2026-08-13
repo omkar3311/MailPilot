@@ -302,3 +302,90 @@ def get_message(service, message_id):
         id=message_id,
         format="full"
     ).execute()
+    
+def extract_email_text(payload):
+    text = None
+    html = None
+
+    def walk(part):
+        nonlocal text, html
+
+        mime = part.get("mimeType", "")
+
+        if mime == "text/plain":
+            data = part["body"].get("data")
+            if data:
+                text = base64.urlsafe_b64decode(data).decode(
+                    "utf-8",
+                    errors="ignore"
+                )
+
+        elif mime == "text/html":
+            data = part["body"].get("data")
+            if data:
+                html = base64.urlsafe_b64decode(data).decode(
+                    "utf-8",
+                    errors="ignore"
+                )
+
+        for child in part.get("parts", []):
+            walk(child)
+
+    walk(payload)
+
+    if text and len(text.strip()) > 50:
+        return text
+
+    if html:
+        return BeautifulSoup(html, "html.parser").get_text("\n", strip=True)
+
+    return ""
+
+
+def parse_email(message):
+    
+
+    headers = message["payload"]["headers"]
+
+    sender = ""
+    subject = ""
+    date = ""
+
+    for h in headers:
+
+        if h["name"] == "From":
+            sender = h["value"]
+
+        elif h["name"] == "Subject":
+            subject = h["value"]
+
+        elif h["name"] == "Date":
+            date = h["value"]
+
+    body = extract_email_text(message["payload"])
+    body = clean_text(body)
+    return {
+
+        "id": message["id"],
+
+        "thread_id": message["threadId"],
+        
+        "payload": message["payload"],
+
+        "from": sender,
+
+        "subject": subject,
+
+        "date": date,
+
+        "snippet": message.get(
+            "snippet",
+            ""
+        ),
+
+        # "body": extract_email_text(
+        #     message["payload"]
+        # )
+        "body" :body
+
+    }
