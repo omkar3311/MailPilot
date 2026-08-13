@@ -193,3 +193,29 @@ def check_new_emails():
 
                 conn.commit()
         time.sleep(15)
+
+def auto_send(email):
+    send_reply(
+        service,
+        email,
+        email["draft_reply"]
+                    )
+    mark_as_read(
+        service,
+        email["id"]
+                    )
+    cursor.execute("""
+        UPDATE emails
+        SET status='sent'
+        WHERE id=?
+        """,(email["id"],))
+    
+    conn.commit()
+  
+@app.on_event("startup")
+def startup():
+
+    threading.Thread(
+        target=check_new_emails,
+        daemon=True
+    ).start()
