@@ -213,3 +213,28 @@ def handle_meeting_request(calendar, client, email, result):
     result["draft_reply"] = updated["draft_reply"]
 
     return result
+
+def today_events(service):
+
+    now = datetime.now()
+
+    end = now + timedelta(days=1)
+
+    events = service.events().list(
+
+        calendarId="primary",
+
+        timeMin=now.isoformat(),
+
+        timeMax=end.isoformat(),
+
+        singleEvents=True,
+
+        orderBy="startTime"
+
+    ).execute()
+
+    return events.get(
+        "items",
+        []
+    )
