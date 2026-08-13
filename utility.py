@@ -478,3 +478,101 @@ Return JSON only:
     }
 
     return result
+
+def display_email(email):
+
+    print("=" * 60)
+
+    print("FROM:", email["from"])
+
+    print("SUBJECT:", email["subject"])
+
+    print("DATE:", email["date"])
+    
+    print("SNIPPET", email["snippet"])
+
+    print("=" * 60)
+
+    print(email["body"])
+    
+    
+def should_analyze(email):
+
+    sender = email["from"].lower()
+    subject = email["subject"].lower()
+
+    if "noreply" in sender:
+        return False
+
+    if "no-reply" in sender:
+        return False
+
+    if "newsletter" in sender:
+        return False
+
+    if "marketing@" in sender:
+        return False
+
+    if "receipt" in sender:
+        return False
+
+    if "promotion" in subject:
+        return False
+
+    return True
+
+
+def create_draft(service, email, reply):
+
+    to_email = email["from"]
+
+    if "<" in to_email:
+        to_email = to_email.split("<")[1].replace(">", "").strip()
+
+    message = MIMEText(reply)
+
+    message["To"] = to_email
+
+    if email["subject"].startswith("Re:"):
+        message["Subject"] = email["subject"]
+    else:
+        message["Subject"] = f"Re: {email['subject']}"
+
+    headers = email["payload"]["headers"]
+
+    message_id = ""
+    references = ""
+
+    for h in headers:
+
+        if h["name"] == "Message-ID":
+            message_id = h["value"]
+
+        elif h["name"] == "References":
+            references = h["value"]
+
+    if message_id:
+        message["In-Reply-To"] = message_id
+
+    if references:
+        message["References"] = references + " " + message_id
+    elif message_id:
+        message["References"] = message_id
+
+    raw = base64.urlsafe_b64encode(
+        message.as_bytes()
+    ).decode()
+
+    draft = {
+        "message": {
+            "raw": raw,
+            "threadId": email["thread_id"]
+        }
+    }
+
+    return service.users().drafts().create(
+        userId="me",
+        body=draft
+    ).execute()
+    
+    
