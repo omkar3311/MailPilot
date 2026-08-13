@@ -238,3 +238,67 @@ def today_events(service):
         "items",
         []
     )
+    
+from datetime import datetime, timedelta
+
+def find_available_slots(
+    service,
+    date,
+    duration_minutes=60
+):
+
+    slots = []
+
+    start_hour = 9
+    end_hour = 18
+
+    for hour in range(start_hour, end_hour):
+
+        start = datetime(
+            date.year,
+            date.month,
+            date.day,
+            hour,
+            0
+        )
+
+        end = start + timedelta(
+            minutes=duration_minutes
+        )
+
+        if check_calendar_availability(
+            service,
+            start,
+            end
+        ):
+            slots.append(
+                (
+                    start,
+                    end
+                )
+            )
+
+    return slots    
+
+
+def get_messages_id(
+    service,
+    query="in:inbox",
+    max_results=10
+):
+    results = service.users().messages().list(
+        userId="me",
+        q=query,
+        maxResults=max_results
+    ).execute()
+
+    return results.get("messages", [])
+
+
+def get_message(service, message_id):
+
+    return service.users().messages().get(
+        userId="me",
+        id=message_id,
+        format="full"
+    ).execute()
