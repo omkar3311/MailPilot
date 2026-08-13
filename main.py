@@ -219,3 +219,44 @@ def startup():
         target=check_new_emails,
         daemon=True
     ).start()
+    
+@app.get("/",response_class=HTMLResponse)
+def dashboard(request: Request):
+    cursor = conn.cursor()
+    cursor.execute("""
+    SELECT *
+    FROM emails
+    WHERE status='pending'
+    ORDER BY
+    CASE priority
+        WHEN 'high' THEN 1
+        WHEN 'medium' THEN 2
+        ELSE 3
+    END
+    """)
+    emails = cursor.fetchall()
+    cursor.execute("""
+
+    SELECT *
+    FROM emails
+    WHERE status='draft'
+    ORDER BY created_at DESC
+
+    """)
+
+    drafts = cursor.fetchall()
+    return templates.TemplateResponse(
+        "index.html",
+        {
+
+            "request":request,
+
+            "emails":emails,
+
+            "drafts":drafts,
+
+            "auto_send":AUTO_SEND
+
+        }
+
+    )
