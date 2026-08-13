@@ -260,3 +260,52 @@ def dashboard(request: Request):
         }
 
     )
+    
+@app.post("/send/{email_id}")
+
+def send(email_id:str):
+    cursor = conn.cursor()
+    cursor.execute(
+
+        "SELECT draft_reply FROM emails WHERE id=?",
+
+        (email_id,)
+
+    )
+
+    reply = cursor.fetchone()[0]
+
+    email = get_message(
+
+        service,
+
+        email_id
+
+    )
+
+    email = parse_email(email)
+
+    send_reply(
+        service,
+        email,
+        reply
+    )
+
+    mark_as_read(
+        service,
+        email_id
+    )
+
+    cursor.execute("""
+        UPDATE emails
+        SET status='sent'
+        WHERE id=?
+        """,(email_id,))
+
+    conn.commit()
+
+    return {
+
+        "success":True
+
+    }
