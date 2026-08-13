@@ -407,3 +407,36 @@ def skip(email_id:str):
         "success":True
 
     }
+    
+@app.post("/automation/{state}")
+
+def automation(state:bool):
+
+    global AUTO_SEND
+
+    AUTO_SEND = state
+    print(AUTO_SEND)
+
+    return {
+
+        "automation":AUTO_SEND
+
+    }
+    
+@app.get("/draft/{email_id}")
+def get_draft(email_id: str):
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT *
+    FROM emails
+    WHERE id=?
+    """,(email_id,))
+
+    row = cursor.fetchone()
+
+    conn.close()
+
+    return row
