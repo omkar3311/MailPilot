@@ -33,3 +33,74 @@ service = gmail_service(creds)
 calendar = calendar_service(creds)
 
 client = groq_client(os.getenv("GROQ_API_KEY"))
+
+def get_db():
+
+    return sqlite3.connect(
+        "email.db",
+        check_same_thread=False
+    )
+conn = get_db()
+cursor = conn.cursor()
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS emails(
+
+id TEXT PRIMARY KEY,
+
+thread_id TEXT,
+
+sender TEXT,
+
+subject TEXT,
+
+body TEXT,
+
+snippet TEXT,
+
+email_date TEXT,
+
+needs_reply INTEGER,
+
+priority TEXT,
+
+summary TEXT,
+
+draft_reply TEXT,
+
+input_tokens INTEGER,
+
+output_tokens INTEGER,
+
+total_tokens INTEGER,
+
+status TEXT DEFAULT 'pending',
+
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+)
+""")
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS drafts(
+
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+email_id TEXT,
+
+thread_id TEXT,
+
+sender TEXT,
+
+subject TEXT,
+
+draft_reply TEXT,
+
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+)
+""")
+
+conn.commit()
+
+AUTO_SEND = False
