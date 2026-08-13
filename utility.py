@@ -575,4 +575,61 @@ def create_draft(service, email, reply):
         body=draft
     ).execute()
     
+def send_reply(service, email, reply):
+
+    to_email = email["from"]
+
+    if "<" in to_email:
+        to_email = (
+            to_email
+            .split("<")[1]
+            .replace(">", "")
+            .strip()
+        )
+
+    message = MIMEText(reply)
+
+    message["To"] = to_email
+
+    if email["subject"].startswith("Re:"):
+        message["Subject"] = email["subject"]
+    else:
+        message["Subject"] = f"Re: {email['subject']}"
+
+    if email.get("message_id"):
+        message["In-Reply-To"] = email["message_id"]
+
+    if email.get("references"):
+        message["References"] = (
+            email["references"] + " " + email["message_id"]
+        )
+    elif email.get("message_id"):
+        message["References"] = email["message_id"]
+
+    raw = base64.urlsafe_b64encode(
+        message.as_bytes()
+    ).decode()
+
+    body = {
+        "raw": raw,
+        "threadId": email["thread_id"]
+    }
+
+    return service.users().messages().send(
+        userId="me",
+        body=body
+    ).execute()
+    
+    
+    
+def mark_as_read(service, message_id):
+
+    service.users().messages().modify(
+        userId="me",
+        id=message_id,
+        body={
+            "removeLabelIds": ["UNREAD"]
+        }
+    ).execute()
+    
     
