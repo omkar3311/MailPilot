@@ -104,3 +104,92 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 conn.commit()
 
 AUTO_SEND = False
+
+def check_new_emails():
+    cursor = conn.cursor()
+    while True:
+        messages = get_messages_id(service,query="in:inbox is:unread",max_results=10)
+        for msg in messages:
+            email = get_message(service,msg["id"])
+            email = parse_email(email)
+            
+            if not should_analyze(email):
+                continue
+            
+            cursor.execute(
+                "SELECT * FROM emails WHERE id=?",
+                (email["id"],)
+            )
+
+            db_email = cursor.fetchone()
+
+            if db_email:
+
+                if (AUTO_SEND and db_email[7] and db_email[14] == "pending"  ):
+
+                    send_reply(
+                        service,
+                        email,
+                        db_email[10]        
+                    )
+
+                    mark_as_read(
+                        service,
+                        email["id"]
+                    )
+
+                    cursor.execute(
+                        """
+                        UPDATE emails
+                        SET status='sent'
+                        WHERE id=?
+                        """,
+                        (email["id"],)
+                    )
+
+                    conn.commit()
+
+                continue            
+
+            result = ask_groq(
+                client,
+                email
+            )
+            if result["meeting_request"]:
+
+                result = handle_meeting_request(
+                    calendar,
+                    client,
+                    email,
+                    result
+                )
+            usage = result.get("usage", {})
+
+            cursor.execute("""
+
+            INSERT INTO emails(id,thread_id,sender,subject,body,snippet,email_date,needs_reply,priority,summary,draft_reply,input_tokens,output_tokens,total_tokens)
+
+            VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+
+            """,(email["id"],email["thread_id"],email["from"],email["subject"],email["body"],email["snippet"],email["date"],result["needs_reply"],result["priority"],result["summary"],result["draft_reply"],usage.get("prompt_tokens",0),usage.get("completion_tokens",0),usage.get("total_tokens",0)))
+            
+            conn.commit()
+            
+            if AUTO_SEND and result["needs_reply"]:
+                send_reply(
+                    service,
+                    email,
+                    result["draft_reply"]
+                )
+                mark_as_read(
+                    service,
+                    email["id"]
+                )
+                cursor.execute("""
+                    UPDATE emails
+                    SET status='sent'
+                    WHERE id=?
+                    """,(email["id"],))
+
+                conn.commit()
+        time.sleep(15)
