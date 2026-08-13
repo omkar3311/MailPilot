@@ -309,3 +309,77 @@ def send(email_id:str):
         "success":True
 
     }
+    
+@app.post("/draft/{email_id}")
+
+def draft(email_id:str):
+    cursor = conn.cursor()
+    cursor.execute(
+
+        """
+        SELECT
+        thread_id,
+        sender,
+        subject,
+        draft_reply
+        FROM emails
+        WHERE id=?
+        """,
+
+        (email_id,)
+
+    )
+
+    row = cursor.fetchone()
+
+    email = parse_email(
+
+        get_message(
+            service,
+            email_id
+        )
+
+    )
+
+    create_draft(
+        service,
+        email,
+        row[3]
+    )
+
+    cursor.execute("""
+
+    INSERT INTO drafts(
+    email_id,
+    thread_id,
+    sender,
+    subject,
+    draft_reply
+
+    )
+
+    VALUES(?,?,?,?,?)
+
+    """,(
+
+    email_id,
+    row[0],
+    row[1],
+    row[2],
+    row[3]
+
+    ))
+
+    cursor.execute("""
+        UPDATE emails
+        SET status='draft'
+        WHERE id=?
+        """,(email_id,))
+
+    conn.commit()
+
+    return {
+
+        "success":True
+
+    }
