@@ -60,3 +60,73 @@ def check_calendar_availability(
     busy = result["calendars"]["primary"]["busy"]
 
     return len(busy) == 0
+
+def create_calendar_event(
+    service,
+    title,
+    start_time,
+    end_time,
+    attendee_email=None,
+    description=""
+):
+
+    event = {
+        "summary": title,
+
+        "description": description,
+
+        "start": {
+            "dateTime": start_time.isoformat(),
+            "timeZone": "Asia/Kolkata"
+        },
+
+        "end": {
+            "dateTime": end_time.isoformat(),
+            "timeZone": "Asia/Kolkata"
+        }
+    }
+
+    if attendee_email:
+        event["attendees"] = [
+            {
+                "email": attendee_email
+            }
+        ]
+
+    return service.events().insert(
+        calendarId="primary",
+        body=event,
+        sendUpdates="all"
+    ).execute()
+    
+def update_calendar_event(
+    service,
+    event_id,
+    title,
+    start_time,
+    end_time
+):
+
+    event = service.events().get(
+        calendarId="primary",
+        eventId=event_id
+    ).execute()
+
+    event["summary"] = title
+
+    event["start"] = {
+        "dateTime": start_time.isoformat(),
+        "timeZone": "Asia/Kolkata"
+    }
+
+    event["end"] = {
+        "dateTime": end_time.isoformat(),
+        "timeZone": "Asia/Kolkata"
+    }
+
+    return service.events().update(
+        calendarId="primary",
+        eventId=event_id,
+        body=event,
+        sendUpdates="all"
+    ).execute()
