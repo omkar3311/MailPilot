@@ -440,3 +440,55 @@ def get_draft(email_id: str):
     conn.close()
 
     return row
+
+@app.get("/emails/{status}")
+def emails(status: str):
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+
+    SELECT *
+    FROM emails
+    WHERE status=?
+    ORDER BY
+    CASE priority
+
+        WHEN 'high' THEN 1
+        WHEN 'medium' THEN 2
+        ELSE 3
+    END,
+    created_at DESC
+
+    """,(status,))
+    rows = cursor.fetchall()
+    conn.close()
+
+    return rows
+
+@app.get("/stats")
+def stats():
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT
+    status,
+    COUNT(*)
+    FROM emails
+    GROUP BY status
+    """)
+
+    data = cursor.fetchall()
+
+    conn.close()
+    return data
+
+@app.get("/workflow", response_class=HTMLResponse)
+async def workflow(request: Request):
+    return templates.TemplateResponse(
+        "workflow.html",
+        {"request": request}
+    )
