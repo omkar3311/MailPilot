@@ -130,3 +130,86 @@ def update_calendar_event(
         body=event,
         sendUpdates="all"
     ).execute()
+    
+def delete_calendar_event(
+    service,
+    event_id
+):
+
+    service.events().delete(
+        calendarId="primary",
+        eventId=event_id,
+        sendUpdates="all"
+    ).execute()
+    
+import re
+
+def extract_email(sender):
+
+    match = re.search(r'<(.+?)>', sender)
+
+    if match:
+        return match.group(1)
+
+    return sender    
+
+def handle_meeting_request(calendar, client, email, result):
+
+    if not result.get("meeting_request"):
+        return result
+
+    start = datetime.fromisoformat(
+        result["meeting_datetime"]
+    )
+
+    duration = result.get("duration", 60)
+
+    end = start + timedelta(minutes=duration)
+
+    available = check_calendar_availability(
+        calendar,
+        start,
+        end
+    )
+
+    if available:
+
+        attendee = extract_email(email["from"])
+
+        event = create_calendar_event(
+            service=calendar,
+            title=email["subject"],
+            start_time=start,
+            end_time=end,
+            attendee_email=attendee,
+            description=email["body"]
+        )
+
+        result["calendar_status"] = "booked"
+        result["calendar_event_id"] = event["id"]
+
+        return result
+
+    slots = find_available_slots(
+        calendar,
+        start.date(),
+        duration
+    )
+
+    result["calendar_status"] = "busy"
+
+    result["available_slots"] = [
+        s[0].strftime("%d %b %Y %I:%M %p")
+        for s in slots[:5]
+    ]
+
+    updated = ask_groq(
+        client,
+        email,
+        result=result,
+        slots=result["available_slots"]
+    )
+
+    result["draft_reply"] = updated["draft_reply"]
+
+    return result
