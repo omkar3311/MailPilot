@@ -389,3 +389,92 @@ def parse_email(message):
         "body" :body
 
     }
+
+def groq_client(api_key):
+    return Groq(
+    api_key=os.getenv("GROQ_API_KEY")
+)
+
+
+def ask_groq(client, email, result=None, slots=None):
+    background = """
+    I'm Omkar Waghmare ,AI Intern at AIAdventures.
+    """
+    
+    prompt = f"""
+Analyze this email and return JSON only.
+
+Email:
+From: {email["from"]}
+Subject: {email["subject"]}
+Body:
+{email["body"][:3000]}
+
+Return:
+{{
+"needs_reply":true,
+"priority":"high|medium|low",
+"summary":"...",
+"meeting_request":false,
+"meeting_datetime":null,
+"duration":60,
+"draft_reply":"..."
+}}
+
+Use ISO format (YYYY-MM-DDTHH:MM:SS). If no meeting is requested, set meeting_request=false and meeting_datetime=null.
+"""
+
+    if result and slots:
+
+        prompt = f"""
+Rewrite this email reply.
+
+Original reply:
+{result["draft_reply"]}
+
+Requested meeting:
+{result["meeting_datetime"]}
+
+Unavailable.
+
+Available slots:
+{", ".join(slots)}
+
+Return JSON only:
+
+{{"draft_reply":"..."}}
+"""
+
+    response = client.chat.completions.create(
+
+        model="llama-3.3-70b-versatile",
+
+        temperature=0.2,
+
+        response_format={
+            "type": "json_object"
+        },
+
+        messages=[
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ]
+
+    )
+    print(response.usage)
+    # return json.loads(
+    #     response.choices[0].message.content
+    # )
+    result = json.loads(
+        response.choices[0].message.content
+    )
+
+    result["usage"] = {
+        "prompt_tokens": response.usage.prompt_tokens,
+        "completion_tokens": response.usage.completion_tokens,
+        "total_tokens": response.usage.total_tokens
+    }
+
+    return result
