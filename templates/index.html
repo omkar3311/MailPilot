@@ -110,3 +110,47 @@
         </p>
 
     </section>
+
+    <section class="stats">
+
+        <div class="stat-card active-card"
+            id="pendingCard"
+            onclick="loadEmails('pending')">
+
+            <h5>Unread</h5>
+
+            <h3 id="pendingCount">0</h3>
+
+        </div>
+
+        <div class="stat-card"
+            id="sentCard"
+            onclick="loadEmails('sent')">
+
+            <h5>Sent</h5>
+
+            <h3 id="sentCount">0</h3>
+
+        </div>
+
+        <div class="stat-card"
+            id="draftCard"
+            onclick="loadEmails('draft')">
+
+            <h5>Drafts</h5>
+
+            <h3 id="draftCount">0</h3>
+
+        </div>
+
+        <div class="stat-card"
+            id="skippedCard"
+            onclick="loadEmails('skipped')">
+
+            <h5>Skipped</h5>
+
+            <h3 id="skippedCount">0</h3>
+
+        </div>
+
+    </section>
