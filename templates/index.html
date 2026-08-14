@@ -18,3 +18,71 @@
 </head>
 
 <body>
+
+<div class="bg-gradient"></div>
+
+<!-- Draft Modal -->
+
+<div id="draftModal" class="modal">
+
+    <div class="modal-content">
+
+        <span class="close" onclick="closeDraft()">&times;</span>
+
+        <div id="draftContent"></div>
+
+    </div>
+
+</div>
+
+<div class="wrapper">
+
+    <!-- Header -->
+
+    <header class="header">
+
+        <div class="logo">
+
+            <div class="logo-icon">✦</div>
+
+            <div>
+
+                <h2>MailPilot AI</h2>
+
+                <small>AI Email Assistant</small>
+
+            </div>
+
+        </div>
+
+        <div class="header-actions">
+
+            <div class="automation-card">
+
+                <span>Automation</span>
+
+                <label class="switch">
+
+                    <input
+                        type="checkbox"
+                        id="autoToggle"
+                        {% if auto_send %}checked{% endif %}
+                    >
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+            <button
+                class="refresh-btn"
+                onclick="loadEmails(currentStatus)">
+
+                Refresh
+
+            </button>
+
+        </div>
+
+    </header>
